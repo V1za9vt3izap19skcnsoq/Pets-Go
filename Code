@@ -351,7 +351,7 @@ Tab:CreateButton({
     Name = "Test Webhook",
     Info = {
         Title = 'Test Webhook',
-        Description = 'Testd The Webhook To See If It's currently working',
+        Description = 'Test The Webhook To See If It's currently working',
     },
     Interact = 'Changable',
     Callback = function()
