@@ -36,19 +36,6 @@ local Window = ArrayField:CreateWindow({
     })
     local Tab = Window:CreateTab("Tab Example", 4483362458) -- Title, Image
 
-Tab:CreateButton({
-    Name = "Copy Discord Link",
-    Info = {
-        Title = 'Copy Discord Link',
-        Description = 'Copys our discord server link to your clipboard',
-    },
-    Interact = 'Changable',
-    Callback = function()
-        setclipboard('https://discord.gg/VudXCDCaBN') 
-        print('Www')              
-    end,
-})
-
 local Section = Tab:CreateSection("Main",false)
 
 local isAutoRolling = false
@@ -208,7 +195,7 @@ Tab:CreateToggle({
     Info = {
         Title = 'Auto Eat Fruits',
         Image = '12735851647',
-        Description = 'Automatically eat selected fruits.',
+        Description = 'Automatically eat the selected fruits you put in the dropdown',
     },
     CurrentValue = false,
     Flag = "Toggle1", 
@@ -284,10 +271,10 @@ Tab:CreateButton({
 })
 
 Tab:CreateToggle({
-    Name = "Constantly Change HoverBoard",
+    Name = "Constantly Change HoverBoard Skin",
     Info = {
         Title = 'Constant Hoverboard Skin Changer',
-        Description = 'Constantly changes hoverboard skin when enabled.',
+        Description = 'Constantly changes your hoverboard skin incase you Unequiped it or smth',
     },
     CurrentValue = false,
     Flag = "Toggle1",
@@ -363,8 +350,8 @@ Tab:CreateInput({
 Tab:CreateButton({
     Name = "Test Webhook",
     Info = {
-        Title = 'This is a Button',
-        Description = 'This is a description for the button you know.',
+        Title = 'Test Webhook',
+        Description = 'Testd The Webhook To See If It's currently working',
     },
     Interact = 'Changable',
     Callback = function()
@@ -377,7 +364,7 @@ Tab:CreateToggle({
     Info = {
         Title = 'Send Message To Webhook',
         Image = '12735851647',
-        Description = 'Toggle to start or stop sending messages to the webhook',
+        Description = 'Sends The Actual Data To The Webhook Lol',
     },
     CurrentValue = false,
     Flag = "SendWebhookToggle",
@@ -389,9 +376,9 @@ Tab:CreateToggle({
 Tab:CreateToggle({
     Name = "Show Coins In Message",
     Info = {
-        Title = 'Show Coins',
+        Title = 'Show Coins In Message',
         Image = '12735851647',
-        Description = 'Toggle to show current coins amount',
+        Description = 'Shows Your Current Coins Amount In the webhook message',
     },
     CurrentValue = false,
     Flag = "ShowCoins",
@@ -403,9 +390,9 @@ Tab:CreateToggle({
 Tab:CreateToggle({
     Name = "Show Coins Multiplier In Message",
     Info = {
-        Title = 'Show Coins Multiplier',
+        Title = 'Show Coins Multiplier In Webhook Message',
         Image = '12735851647',
-        Description = 'Toggle to show coins multiplier',
+        Description = 'Shows Your Current Coin Multiplier in the webhook message',
     },
     CurrentValue = false,
     Flag = "ShowCoinsMultiplier",
@@ -417,9 +404,9 @@ Tab:CreateToggle({
 Tab:CreateToggle({
     Name = "Show Diamonds In Message",
     Info = {
-        Title = 'Show Diamonds',
+        Title = 'Show Diamonds In Message',
         Image = '12735851647',
-        Description = 'Toggle to show diamonds amount',
+        Description = 'Shows The Current Amount Of Diamonds you have in the webhook message',
     },
     CurrentValue = false,
     Flag = "ShowDiamonds",
@@ -550,4 +537,71 @@ Tab:CreateButton({
         end
     end,
 })
+
+local CoreGui = game:GetService("CoreGui")
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Parent = CoreGui
+ScreenGui.IgnoreGuiInset = true
+
+local FullScreenFrame = Instance.new("Frame")
+FullScreenFrame.Size = UDim2.new(1, 0, 1, 0)
+FullScreenFrame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+FullScreenFrame.Visible = false
+FullScreenFrame.Parent = ScreenGui
+
+local currentEffect = nil
+
+Tab:CreateToggle({
+    Name = "White Screen",
+    Info = {
+        Title = 'White Screen',
+        Image = '12735851647',
+        Description = 'SAVE MY CPU PLSSS',
+    },
+    CurrentValue = false,
+    Flag = "ToggleWhiteScreen",
+    Callback = function(Value)
+        if Value then
+            if currentEffect == "Black" then
+                FullScreenFrame.Visible = false
+            end
+            FullScreenFrame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+            FullScreenFrame.Visible = true
+            currentEffect = "White"
+        else
+            if currentEffect == "White" then
+                FullScreenFrame.Visible = false
+                currentEffect = nil
+            end
+        end
+    end,
+})
+
+Tab:CreateToggle({
+    Name = "Black Screen",
+    Info = {
+        Title = 'Black Screen',
+        Image = '12735851647',
+        Description = 'Save My Cpu PLSSS',
+    },
+    CurrentValue = false,
+    Flag = "ToggleBlackScreen",
+    Callback = function(Value)
+        if Value then
+            if currentEffect == "White" then
+                FullScreenFrame.Visible = false
+            end
+            FullScreenFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+            FullScreenFrame.Visible = true
+            currentEffect = "Black"
+        else
+            if currentEffect == "Black" then
+                FullScreenFrame.Visible = false
+                currentEffect = nil
+            end
+        end
+    end,
+})
+
+
 
