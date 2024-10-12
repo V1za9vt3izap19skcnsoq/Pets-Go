@@ -126,6 +126,105 @@ Tab:CreateToggle({
     end,
 })
 
+local Players = game:GetService("Players")
+local Workspace = game:GetService("Workspace")
+local VirtualInputManager = game:GetService("VirtualInputManager")
+local player = Players.LocalPlayer
+local camera = Workspace.CurrentCamera
+
+local breakables = Workspace.__THINGS.Breakables
+
+local function getScreenPosition(worldPosition)
+    local screenPos, onScreen = camera:WorldToViewportPoint(worldPosition)
+    if onScreen then
+        return Vector2.new(screenPos.X, screenPos.Y), onScreen
+    end
+    return nil, false
+end
+
+local function getClosestBreakable()
+    local closestBreakable = nil
+    local shortestDistance = math.huge
+
+    for _, breakable in pairs(breakables:GetChildren()) do
+        if breakable:IsA("Model") and breakable.PrimaryPart then
+            local distance = (player.Character.HumanoidRootPart.Position - breakable.PrimaryPart.Position).Magnitude
+            if distance < shortestDistance then
+                closestBreakable = breakable
+                shortestDistance = distance
+            end
+        end
+    end
+
+    return closestBreakable
+end
+
+local autoFarmEnabled = false
+
+Tab:CreateToggle({
+    Name = "Auto Farm Breakables and Drops",
+    Info = {
+        Title = 'Auto Farm Breakables and Drops',
+        Image = '12735851647',
+        Description = 'Auto Farms Breakables and Drops',
+    },
+    CurrentValue = false,
+    Flag = "Toggle1",
+    Callback = function(Value)
+        autoFarmEnabled = Value
+    end,
+})
+
+Tab:CreateButton({
+    Name = "Force Stop Auto Farm Breakables and Drops",
+    Info = {
+        Title = 'Force Stop Auto Farm Breakables and Drops',
+        Description = 'Click this incase it keeps on clicking the toggle',
+    },
+    Interact = 'Changable',
+    Callback = function()
+        autoFarmEnabled = false
+    end,
+})
+
+local function teleportToBreakable(breakable)
+    if player.Character and player.Character:FindFirstChild("HumanoidRootPart") and breakable and breakable.PrimaryPart then
+        local breakablePosition = breakable.PrimaryPart.Position
+        local offset = Vector3.new(-5, 0, 0)
+        player.Character.HumanoidRootPart.CFrame = CFrame.new(breakablePosition + offset)
+    end
+end
+
+task.spawn(function()
+    while true do
+        if autoFarmEnabled then
+            local targetBreakable = getClosestBreakable()
+
+            if targetBreakable and targetBreakable:IsA("Model") and targetBreakable.PrimaryPart then
+                teleportToBreakable(targetBreakable)
+
+                local objectPosition = targetBreakable.PrimaryPart.Position
+                local screenPosition, isOnScreen = getScreenPosition(objectPosition)
+
+                if isOnScreen and screenPosition then
+                    while targetBreakable and targetBreakable.Parent and targetBreakable:IsDescendantOf(Workspace) do
+                        screenPosition, isOnScreen = getScreenPosition(targetBreakable.PrimaryPart.Position)
+                        if not isOnScreen then
+                            break
+                        end
+                        VirtualInputManager:SendMouseButtonEvent(screenPosition.X, screenPosition.Y, 0, true, game, 0)
+                        task.wait(0.01)
+                        VirtualInputManager:SendMouseButtonEvent(screenPosition.X, screenPosition.Y, 0, false, game, 0)
+                        task.wait(0.01)
+                    end
+                end
+                task.wait(0.75)
+            end
+        end
+        task.wait(0.01)
+    end
+end)
+
 local AutoBuyVending = false
 
 Tab:CreateToggle({
