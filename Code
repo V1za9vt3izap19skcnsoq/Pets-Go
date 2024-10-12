@@ -253,6 +253,56 @@ Tab:CreateToggle({
     end,
 })
 
+local autoBuyMI = false
+local merchantIndexMapping = {
+    ["Option 1"] = 1,
+    ["Option 2"] = 2,
+    ["Option 3"] = 3,
+    ["Option 4"] = 4,
+    ["Option 5"] = 5,
+    ["Option 6"] = 6
+}
+
+Tab:CreateDropdown({
+    Name = "Merchant Index To Buy",
+    Options = {"Option 1", "Option 2", "Option 3", "Option 4", "Option 5", "Option 6"},
+    CurrentOption = {}, 
+    MultiSelection = true,
+    Flag = "Dropdown1",
+    Callback = function(options)
+        if typeof(options) == "string" then
+            options = {options}
+        end
+
+        while autoBuyMI do
+            for _, option in pairs(options) do
+                if merchantIndexMapping[option] then
+                    local args = {
+                        [1] = "AdvancedIndexMerchant",
+                        [2] = merchantIndexMapping[option]
+                    }
+                    game:GetService("ReplicatedStorage").Network.Merchant_RequestPurchase:InvokeServer(unpack(args))
+                end
+            end
+            task.wait(4)
+        end
+    end,
+})
+
+Tab:CreateToggle({
+    Name = "Auto Buy Merchant Index",
+    Info = {
+        Title = 'Auto Buy Merchant Index',
+        Image = '12735851647',
+        Description = 'Automatically buy from the selected merchants',
+    },
+    CurrentValue = false,
+    Flag = "Toggle1", 
+    Callback = function(Value)
+        autoBuyMI = Value
+    end,
+})
+
 local selectedAmount = 1
 local autoEatEnabled = false
 
