@@ -1,1 +1,540 @@
+local ArrayField = loadstring(game:HttpGet("https://raw.githubusercontent.com/Hosvile/Refinement/main/MC%3AArrayfield%20Library"))()
+--Documentation url: https://docs.sirius.menu/community/arrayfield
+
+local Window = ArrayField:CreateWindow({
+        Name = "Rinns Hub",
+        LoadingTitle = "Rinns Hub",
+        LoadingSubtitle = "Code by Rinn Ui by Sirius Ui remake by Hosvile",
+        ConfigurationSaving = {
+            Enabled = true,
+            FolderName = RinnsHubConfigs, -- Create a custom folder for your hub/game
+            FileName = "RinnsHub"
+        },
+        Discord = {
+            Enabled = true,
+            Invite = "Mt9F5nc8Tg", -- The Discord invite code, do not include discord.gg/
+            RememberJoins = false -- Set this to false to make them join the discord every time they load it up
+        },
+        KeySystem = false, -- Set this to true to use our key system
+        KeySettings = {
+            Title = "ArrayField",
+            Subtitle = "Key System",
+            Note = "Join the discord (discord.gg/sirius)",
+            FileName = "ArrayFieldsKeys",
+            SaveKey = false,
+            GrabKeyFromSite = false, -- If this is true, set Key below to the RAW site you would like ArrayField to get the key from
+            Key = {"Hello",'Bye'},
+            Actions = {
+                [1] = {
+                    Text = 'Click here to copy the key link',
+                    OnPress = function()
+
+                    end,
+                }
+            },
+        }
+    })
+    local Tab = Window:CreateTab("Tab Example", 4483362458) -- Title, Image
+
+local Section = Tab:CreateSection("Main",false)
+
+local isAutoRolling = false
+local autoRollTask
+
+Tab:CreateToggle({
+    Name = "Auto Roll",
+    Info = {
+        Title = 'Slider template',
+        Image = '12735851647',
+        Description = 'Just a slider for stuff',
+    },
+    CurrentValue = false,
+    Flag = "AutoRoll",
+    Callback = function(Value)
+        isAutoRolling = Value
+        if isAutoRolling then
+            autoRollTask = game:GetService("RunService").Heartbeat:Connect(function()
+                game:GetService("ReplicatedStorage").Network.Eggs_Roll:InvokeServer()
+                wait(0.5)
+            end)
+        else
+            if autoRollTask then
+                autoRollTask:Disconnect()
+                autoRollTask = nil
+            end
+        end
+    end,
+})
+
+local autoBuyEnabled = false
+local completedChildren = {}
+
+Tab:CreateToggle({
+    Name = "Auto Buy Upgrades",
+    Info = {
+        Title = 'Slider template',
+        Image = '12735851647',
+        Description = 'Just a slider for stuff',
+    },
+    CurrentValue = false,
+    Flag = "Toggle1",
+    Callback = function(Value)
+        autoBuyEnabled = Value
+        if autoBuyEnabled then
+            spawn(function()
+                while autoBuyEnabled do
+                    local upgrades = game:GetService("ReplicatedStorage").__DIRECTORY.Upgrades:GetDescendants()
+                    for _, descendant in ipairs(upgrades) do
+                        if not table.find(completedChildren, descendant.Name) then
+                            local args = {
+                                [1] = descendant.Name
+                            }
+                            game:GetService("ReplicatedStorage").Network.Upgrades_Purchase:InvokeServer(unpack(args))
+                            table.insert(completedChildren, descendant.Name)
+                            task.wait(0.85)
+                        end
+                        if not autoBuyEnabled then
+                            break
+                        end
+                    end
+                    if #completedChildren == #upgrades then
+                        completedChildren = {}
+                    end
+                    if not autoBuyEnabled then
+                        break
+                    end
+                end
+            end)
+        else
+            completedChildren = {}
+        end
+    end,
+})
+
+local AutoBuyVending = false
+
+Tab:CreateToggle({
+    Name = "Auto Buy Vending Machine Potions",
+    Info = {
+        Title = 'Slider template',
+        Image = '12735851647',
+        Description = 'Just a slider for stuff',
+    },
+    CurrentValue = false,
+    Flag = "Toggle1",
+    Callback = function(Value)
+        AutoBuyVending = Value
+        if AutoBuyVending then
+            spawn(function()
+                while AutoBuyVending do
+                    local args = {
+                        [1] = "PotionVendingMachine",
+                        [2] = 1
+                    }
+                    game:GetService("ReplicatedStorage").Network.VendingMachines_Purchase:InvokeServer(unpack(args))
+                    wait(1.5)
+                end
+            end)
+        end
+    end,
+})
+
+local selectedAmount = 1
+local autoEatEnabled = false
+
+-- Custom table mapping fruits to their corresponding arguments
+local fruitCodes = {
+    ["Apple"] = "7f9339544875405fa8150f786ac38410",
+    ["Orange"] = "a81379398bfb4166900b0c8555785db2",
+    ["Banana"] = "1f9136d4c15747d499d5430101b58e4d",
+    ["Pineapple"] = "e6041be12581427fb53600dc1f8771c8",
+    ["Watermelon"] = "19f4ad8f95bb48d89749117ca630eb34"
+}
+
+Tab:CreateDropdown({
+    Name = "Fruits To Eat",
+    Options = {"Watermelon", "Pineapple", "Orange", "Banana", "Apple"},
+    CurrentOption = {"Apple", "Orange"}, -- Default selected fruits
+    MultiSelection = true,
+    Flag = "Dropdown1",
+    Callback = function(Option)
+        -- Ensure that Option is always a table, even if it's a single selection
+        if typeof(Option) == "string" then
+            Option = {Option}
+        end
+
+        while autoEatEnabled do
+            for _, fruit in pairs(Option) do
+                if fruitCodes[fruit] then
+                    local args = {
+                        [1] = fruitCodes[fruit],
+                        [2] = selectedAmount
+                    }
+                    game:GetService("ReplicatedStorage").Network:FindFirstChild("Fruits: Consume"):InvokeServer(unpack(args))
+                end
+            end
+            task.wait(1.5)
+        end
+    end,
+})
+
+Tab:CreateInput({
+    Name = "Amount Of Fruits",
+    PlaceholderText = "The Amount of Fruits To Eat",
+    RemoveTextAfterFocusLost = false,
+    Callback = function(Text)
+        local number = tonumber(Text)
+        if number then
+            selectedAmount = number
+        end
+    end,
+})
+
+Tab:CreateToggle({
+    Name = "Auto Eat Fruits",
+    Info = {
+        Title = 'Auto Eat Fruits',
+        Image = '12735851647',
+        Description = 'Automatically eat selected fruits.',
+    },
+    CurrentValue = false,
+    Flag = "Toggle1", 
+    Callback = function(Value)
+        autoEatEnabled = Value
+    end,
+})
+
+
+
+
+local Section = Tab:CreateSection("Visuals (Not Fe)",false)
+
+local Players = game:GetService("Players")
+local Workspace = game:GetService("Workspace")
+
+local hoverboardSkins = {
+    ["default"] = {Mesh = "rbxassetid://6356575802", Texture = "rbxassetid://3694027461"},
+    ["Watermelon"] = {Mesh = "rbxassetid://14952576670", Texture = "rbxassetid://14952576590"},
+    ["Unicorn"] = {Mesh = "rbxassetid://15278984126", Texture = "rbxassetid://15278984162"},
+    ["Tiger"] = {Mesh = "rbxassetid://15278984273", Texture = "rbxassetid://15278984308"},
+    ["Surfboard"] = {Mesh = "rbxassetid://13703838341", Texture = "rbxassetid://13703840000"},
+    ["Sk8board"] = {Mesh = "rbxassetid://15296210525", Texture = "rbxassetid://15296210475"},
+    ["Red Flying Carpet"] = {Mesh = "rbxassetid://7861828868", Texture = "rbxassetid://7861828642"},
+    ["Rave Crab"] = {Mesh = "rbxassetid://71941094490973", Texture = "rbxassetid://124141266640981"},
+    ["Purple"] = {Mesh = "rbxassetid://6356575802", Texture = "rbxassetid://10331580090"},
+    ["Pegasus"] = {Mesh = "rbxassetid://15278984591", Texture = "rbxassetid://15278984638"},
+    ["Ice Cream"] = {Mesh = "rbxassetid://18855684665", Texture = "rbxassetid://18855684538"},
+    ["Flame"] = {Mesh = "rbxassetid://7859796249", Texture = "rbxassetid://7859796167"},
+    ["Ducky"] = {Mesh = "rbxassetid://15278984729", Texture = "rbxassetid://15278984753"},
+    ["Doodle"] = {Mesh = "rbxassetid://12218996307", Texture = "rbxassetid://12218997933"},
+    ["Cat"] = {Mesh = "rbxassetid://7861852552", Texture = "rbxassetid://7861852343"},
+    ["Cardboard"] = {Mesh = "rbxassetid://15296206288", Texture = "rbxassetid://15296206126"},
+    ["Camo"] = {Mesh = "rbxassetid://15296203903", Texture = "rbxassetid://15296203823"},
+    ["Blue Flying Carpet"] = {Mesh = "rbxassetid://7861828868", Texture = "rbxassetid://7861828303"},
+    ["Bee"] = {Mesh = "rbxassetid://7861855753", Texture = "rbxassetid://7861855471"},
+    ["Axolotl"] = {Mesh = "rbxassetid://15278986620", Texture = "rbxassetid://15278986684"}
+}
+
+local selectedSkin = "default"
+local changeSkin = false
+
+Tab:CreateDropdown({
+    Name = "HoverBoard Skin Changer",
+    Options = {"default", "Watermelon", "Unicorn", "Tiger", "Surfboard", "Sk8board", "Red Flying Carpet", "Rave Crab", "Purple", "Pegasus", "Ice Cream", "Flame", "Ducky", "Doodle", "Cat", "Cardboard", "Camo", "Blue Flying Carpet", "Bee", "Axolotl"},
+    CurrentOption = "default",
+    MultiSelection = false,
+    Flag = "Dropdown2",
+    Callback = function(Option)
+        selectedSkin = Option
+    end
+})
+
+Tab:CreateButton({
+    Name = "Change Hover Board Skin",
+    Info = {
+        Title = 'This is a Button',
+        Description = 'This is a description for the button you know.',
+    },
+    Interact = 'Changable',
+    Callback = function()
+        local player = Players.LocalPlayer
+        local hoverboard = Workspace:FindFirstChild("__THINGS"):FindFirstChild("Hoverboards"):FindFirstChild(player.Name):FindFirstChild("Hoverboard")
+
+        if hoverboard and hoverboard:IsA("MeshPart") then
+            local selected = hoverboardSkins[selectedSkin]
+            if selected then
+                hoverboard.MeshId = selected.Mesh
+                hoverboard.TextureID = selected.Texture
+            end
+        end
+    end
+})
+
+Tab:CreateToggle({
+    Name = "Constantly Change HoverBoard",
+    Info = {
+        Title = 'Constant Hoverboard Skin Changer',
+        Description = 'Constantly changes hoverboard skin when enabled.',
+    },
+    CurrentValue = false,
+    Flag = "Toggle1",
+    Callback = function(Value)
+        changeSkin = Value
+        
+        if changeSkin then
+            spawn(function()
+                while changeSkin do
+                    local player = Players.LocalPlayer
+                    local hoverboard = Workspace:FindFirstChild("__THINGS"):FindFirstChild("Hoverboards"):FindFirstChild(player.Name):FindFirstChild("Hoverboard")
+
+                    while not hoverboard or not hoverboard:IsA("MeshPart") do
+                        hoverboard = Workspace:FindFirstChild("__THINGS"):FindFirstChild("Hoverboards"):FindFirstChild(player.Name):FindFirstChild("Hoverboard")
+                        wait(1)
+                    end
+
+                    if hoverboard and hoverboard:IsA("MeshPart") then
+                        local selected = hoverboardSkins[selectedSkin]
+                        if selected then
+                            hoverboard.MeshId = selected.Mesh
+                            hoverboard.TextureID = selected.Texture
+                        end
+                    end
+
+                    while hoverboard and hoverboard:IsA("MeshPart") and changeSkin do
+                        wait(2)
+                        hoverboard = Workspace:FindFirstChild("__THINGS"):FindFirstChild("Hoverboards"):FindFirstChild(player.Name):FindFirstChild("Hoverboard")
+                        if hoverboard then
+                            local selected = hoverboardSkins[selectedSkin]
+                            if selected then
+                                hoverboard.MeshId = selected.Mesh
+                                hoverboard.TextureID = selected.Texture
+                            end
+                        end
+                    end
+                end
+            end)
+        end
+    end
+})
+
+local Section = Tab:CreateSection("Webhook",false)
+
+local WebhookURL = ""
+local sendFrequency = 300 
+local sendMessageToWebhook = false
+local showCoins = false
+local showCoinsMultiplier = false
+local showDiamonds = false
+
+Tab:CreateInput({
+    Name = "Webhook Url",
+    PlaceholderText = "The Webhook Url It should send messages to",
+    RemoveTextAfterFocusLost = false,
+    Callback = function(Text)
+        WebhookURL = Text
+    end,
+})
+
+Tab:CreateInput({
+    Name = "Message Frequency (Seconds)",
+    PlaceholderText = "Time Before It Sends a message to the webhook default is 300 (5 mins)",
+    RemoveTextAfterFocusLost = false,
+    Callback = function(Text)
+        local num = tonumber(Text)
+        if num then
+            sendFrequency = num
+        end
+    end,
+})
+
+Tab:CreateButton({
+    Name = "Test Webhook",
+    Info = {
+        Title = 'This is a Button',
+        Description = 'This is a description for the button you know.',
+    },
+    Interact = 'Changable',
+    Callback = function()
+        sendWebhookMessage()
+    end,
+})
+
+Tab:CreateToggle({
+    Name = "Send Message To Webhook",
+    Info = {
+        Title = 'Send Message To Webhook',
+        Image = '12735851647',
+        Description = 'Toggle to start or stop sending messages to the webhook',
+    },
+    CurrentValue = false,
+    Flag = "SendWebhookToggle",
+    Callback = function(Value)
+        sendMessageToWebhook = Value
+    end,
+})
+
+Tab:CreateToggle({
+    Name = "Show Coins In Message",
+    Info = {
+        Title = 'Show Coins',
+        Image = '12735851647',
+        Description = 'Toggle to show current coins amount',
+    },
+    CurrentValue = false,
+    Flag = "ShowCoins",
+    Callback = function(Value)
+        showCoins = Value
+    end,
+})
+
+Tab:CreateToggle({
+    Name = "Show Coins Multiplier In Message",
+    Info = {
+        Title = 'Show Coins Multiplier',
+        Image = '12735851647',
+        Description = 'Toggle to show coins multiplier',
+    },
+    CurrentValue = false,
+    Flag = "ShowCoinsMultiplier",
+    Callback = function(Value)
+        showCoinsMultiplier = Value
+    end,
+})
+
+Tab:CreateToggle({
+    Name = "Show Diamonds In Message",
+    Info = {
+        Title = 'Show Diamonds',
+        Image = '12735851647',
+        Description = 'Toggle to show diamonds amount',
+    },
+    CurrentValue = false,
+    Flag = "ShowDiamonds",
+    Callback = function(Value)
+        showDiamonds = Value
+    end,
+})
+
+local function fetchPlayerStats()
+    local player = game:GetService("Players").LocalPlayer
+    local coins, coinsMultiplier, diamonds = "N/A", "N/A", "N/A"
+    
+    if showCoins then
+        local coinsGui = player.PlayerGui.Main.Top.Coins.Amount
+        if coinsGui then
+            coins = coinsGui.Text
+        end
+    end
+    
+    if showCoinsMultiplier then
+        local multGui = player.PlayerGui.Main.Top.Coins.Icon.Mult
+        if multGui then
+            coinsMultiplier = multGui.Text
+        end
+    end
+    
+    if showDiamonds then
+        local diamondsGui = player.PlayerGui.Main.Top.Diamonds.Amount
+        if diamondsGui then
+            diamonds = diamondsGui.Text
+        end
+    end
+
+    return coins, coinsMultiplier, diamonds
+end
+local function sendWebhookMessage()
+    if not sendMessageToWebhook or WebhookURL == "" then return end
+    
+    local player = game:GetService("Players").LocalPlayer
+    local coins, coinsMultiplier, diamonds = fetchPlayerStats()
+
+    local embed = {
+        ["title"] = "Rinns Hub Pets Go",
+        ["description"] = "Today at " .. os.date("%I:%M %p"),
+        ["color"] = 16711680,
+        ["fields"] = {
+            {
+                ["name"] = "Coins",
+                ["value"] = coins,
+                ["inline"] = true
+            },
+            {
+                ["name"] = "Coins Multiplier",
+                ["value"] = coinsMultiplier,
+                ["inline"] = true
+            },
+            {
+                ["name"] = "Diamonds",
+                ["value"] = diamonds,
+                ["inline"] = true
+            },
+        },
+        ["footer"] = {
+            ["text"] = "Rinns Hub https://discord.gg/3jsa6zvs2X",
+            ["icon_url"] = "https://cdn.discordapp.com/icons/1046775262303494155/8196a5e833dbe7b11bcf50071ed3da55.webp?size=96"
+        }
+    }
+
+    local msg = {
+        ["embeds"] = {embed},
+        ["username"] = "Rinns Hub Data 🥱",
+        ["avatar_url"] = "https://cdn.discordapp.com/icons/1046775262303494155/8196a5e833dbe7b11bcf50071ed3da55.webp?size=96",
+    }
+
+    local request = http_request or request or HttpPost or syn.request
+    request({
+        Url = WebhookURL,
+        Method = "POST",
+        Headers = {
+            ["Content-Type"] = "application/json",
+        },
+        Body = game:GetService("HttpService"):JSONEncode(msg),
+    })
+end
+
+local function startAutoSend()
+    while true do
+        if sendMessageToWebhook then
+            sendWebhookMessage()
+        end
+        task.wait(sendFrequency)
+    end
+end
+
+coroutine.wrap(startAutoSend)()
+
+local Section = Tab:CreateSection("Misc",false)
+
+Tab:CreateButton({
+    Name = "Rejoin",
+    Callback = function()
+        local player = game:GetService("Players").LocalPlayer
+        local teleportService = game:GetService("TeleportService")
+        teleportService:Teleport(game.PlaceId, player)
+    end,
+})
+
+Tab:CreateButton({
+    Name = "Serverhop",
+    Callback = function()
+        local player = game:GetService("Players").LocalPlayer
+        local teleportService = game:GetService("TeleportService")
+        local httpService = game:GetService("HttpService")
+        local servers = httpService:JSONDecode(game:HttpGet("https://games.roblox.com/v1/games/"..game.PlaceId.."/servers/Public?sortOrder=Asc&limit=100")).data
+
+        local availableServers = {}
+        for _, server in pairs(servers) do
+            if server.playing < server.maxPlayers and server.id ~= game.JobId then
+                table.insert(availableServers, server.id)
+            end
+        end
+
+        if #availableServers > 0 then
+            local randomServer = availableServers[math.random(1, #availableServers)]
+            teleportService:TeleportToPlaceInstance(game.PlaceId, randomServer, player)
+        else
+            print("No servers available for server hopping")
+        end
+    end,
+})
 
