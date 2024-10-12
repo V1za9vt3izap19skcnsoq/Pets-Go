@@ -142,12 +142,21 @@ local function getScreenPosition(worldPosition)
     return nil, false
 end
 
+local function hasTouchInterest(model)
+    for _, descendant in pairs(model:GetDescendants()) do
+        if descendant:IsA("TouchTransmitter") then
+            return true
+        end
+    end
+    return false
+end
+
 local function getClosestBreakable()
     local closestBreakable = nil
     local shortestDistance = math.huge
 
     for _, breakable in pairs(breakables:GetChildren()) do
-        if breakable:IsA("Model") and breakable.PrimaryPart then
+        if breakable:IsA("Model") and breakable.PrimaryPart and not hasTouchInterest(breakable) then
             local distance = (player.Character.HumanoidRootPart.Position - breakable.PrimaryPart.Position).Magnitude
             if distance < shortestDistance then
                 closestBreakable = breakable
@@ -213,17 +222,18 @@ task.spawn(function()
                             break
                         end
                         VirtualInputManager:SendMouseButtonEvent(screenPosition.X, screenPosition.Y, 0, true, game, 0)
-                        task.wait(0.01)
+                        task.wait(0.05)
                         VirtualInputManager:SendMouseButtonEvent(screenPosition.X, screenPosition.Y, 0, false, game, 0)
-                        task.wait(0.01)
+                        task.wait(0.05)
                     end
                 end
                 task.wait(0.75)
             end
         end
-        task.wait(0.01)
+        task.wait(0.05)
     end
 end)
+
 
 local AutoBuyVending = false
 
