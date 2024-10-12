@@ -36,6 +36,19 @@ local Window = ArrayField:CreateWindow({
     })
     local Tab = Window:CreateTab("Tab Example", 4483362458) -- Title, Image
 
+Tab:CreateButton({
+    Name = "Copy Discord Link",
+    Info = {
+        Title = 'Copy Discord Link',
+        Description = 'Copys our discord server link to your clipboard',
+    },
+    Interact = 'Changable',
+    Callback = function()
+        setclipboard('https://discord.gg/VudXCDCaBN') 
+        print('Www')              
+    end,
+})
+
 local Section = Tab:CreateSection("Main",false)
 
 local isAutoRolling = false
