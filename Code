@@ -204,6 +204,92 @@ Tab:CreateToggle({
     end,
 })
 
+local autoBuyPotionsEnabled = false
+
+local potionCodes = {
+    ["Golden Dice"] = 18,
+    ["Walkspeed Potion I"] = 15,
+    ["Walkspeed Potion II"] = 16,
+    ["Walkspeed Potion III"] = 17,
+    ["Items Potion I"] = 12,
+    ["Items Potion II"] = 13,
+    ["Items Potion III"] = 14,
+    ["Items Potion IV"] = 13,
+    ["Items Potion V"] = 14,
+    ["Breakable Potion I"] = 9,
+    ["Breakable Potion II"] = 10,
+    ["Coins Potion II"] = 5,
+    ["Coins Potion III"] = 6,
+    ["Coins Potion IV"] = 7,
+    ["Coins Potion V"] = 8,
+    ["Lucky Potion II"] = 1,
+    ["Lucky Potion III"] = 2,
+    ["Lucky Potion IV"] = 3,
+    ["Lucky Potion V"] = 4,
+    ["The CockTail"] = 23
+}
+
+Tab:CreateDropdown({
+    Name = "Potions To Buy",
+    Options = {
+        "Items Potion I", 
+        "Items Potion II", 
+        "Items Potion III",
+        "Items Potion IV",
+        "Items Potion V",
+        "Lucky Potion II", 
+        "Lucky Potion III", 
+        "Lucky Potion IV", 
+        "Lucky Potion V", 
+        "Coins Potion II", 
+        "Coins Potion III", 
+        "Coins Potion IV", 
+        "Coins Potion V", 
+        "Walkspeed Potion I", 
+        "Walkspeed Potion II", 
+        "Walkspeed Potion III", 
+        "Breakable Potion I", 
+        "Breakable Potion II", 
+        "Golden Dice", 
+        "The CockTail"
+    },
+    CurrentOption = {"", ""}, 
+    MultiSelection = true,
+    Flag = "Dropdown1",
+    Callback = function(Option)
+        if typeof(Option) == "string" then
+            Option = {Option}
+        end
+
+        while autoBuyPotionsEnabled do
+            for _, potion in pairs(Option) do
+                if potionCodes[potion] then
+                    local args = {
+                        [1] = "PotionCraftingMachine",
+                        [2] = potionCodes[potion]
+                    }
+                    game:GetService("ReplicatedStorage").Network.CraftingMachine_Craft:InvokeServer(unpack(args))
+                end
+            end
+            task.wait(3)
+        end
+    end,
+})
+
+Tab:CreateToggle({
+    Name = "Auto Buy Potions",
+    Info = {
+        Title = 'Auto Buy Potions',
+        Image = '12735851647',
+        Description = 'Automatically buy the selected potions you put in the dropdown',
+    },
+    CurrentValue = false,
+    Flag = "Toggle1", 
+    Callback = function(Value)
+        autoBuyPotionsEnabled = Value
+    end,
+})
+
 
 
 
