@@ -380,6 +380,83 @@ Tab:CreateToggle({
     end,
 })
 
+local args = {
+    [1] = {
+        ["7f9339544875405fa8150f786ac38410"] = 5,
+        ["19f4ad8f95bb48d89749117ca630eb34"] = 5,
+        ["1f9136d4c15747d499d5430101b58e4d"] = 5,
+        ["e6041be12581427fb53600dc1f8771c8"] = 5,
+        ["a81379398bfb4166900b0c8555785db2"] = 5
+    }
+}
+
+Tab:CreateInput({
+    Name = "Amount of Apples to use",
+    PlaceholderText = "Amount Of Apples to use to upgrade to a rainbow fruit",
+    RemoveTextAfterFocusLost = false,
+    Callback = function(Text)
+        args[1]["7f9339544875405fa8150f786ac38410"] = tonumber(Text) or 5
+    end,
+})
+
+Tab:CreateInput({
+    Name = "Amount of Oranges to use",
+    PlaceholderText = "Amount Of Oranges to use to upgrade to a rainbow fruit",
+    RemoveTextAfterFocusLost = false,
+    Callback = function(Text)
+        args[1]["a81379398bfb4166900b0c8555785db2"] = tonumber(Text) or 5
+    end,
+})
+
+Tab:CreateInput({
+    Name = "Amount of Pineapples to use",
+    PlaceholderText = "Amount Of Pineapples to use to upgrade to a rainbow fruit",
+    RemoveTextAfterFocusLost = false,
+    Callback = function(Text)
+        args[1]["e6041be12581427fb53600dc1f8771c8"] = tonumber(Text) or 5
+    end,
+})
+
+Tab:CreateInput({
+    Name = "Amount of Bananas to use",
+    PlaceholderText = "Amount Of Bananas to use to upgrade to a rainbow fruit",
+    RemoveTextAfterFocusLost = false,
+    Callback = function(Text)
+        args[1]["1f9136d4c15747d499d5430101b58e4d"] = tonumber(Text) or 5
+    end,
+})
+
+Tab:CreateInput({
+    Name = "Amount of Watermelons to use",
+    PlaceholderText = "Amount Of Watermelons to use to upgrade to a rainbow fruit",
+    RemoveTextAfterFocusLost = false,
+    Callback = function(Text)
+        args[1]["19f4ad8f95bb48d89749117ca630eb34"] = tonumber(Text) or 5
+    end,
+})
+
+local AutoUpgradeFruit = false
+
+Tab:CreateToggle({
+    Name = "Auto Upgrade To Rainbow Fruit",
+    Info = {
+        Title = 'Slider template',
+        Image = '12735851647',
+        Description = 'Just a slider for stuff',
+    },
+    CurrentValue = false,
+    Flag = "Toggle1",
+    Callback = function(Value)
+        AutoUpgradeFruit = Value
+        if AutoUpgradeFruit then
+            while AutoUpgradeFruit do
+                game:GetService("ReplicatedStorage").Network.UpgradeFruitsMachine_Activate:InvokeServer(unpack(args))
+                wait(5)
+            end
+        end
+    end,
+})
+
 local autoBuyPotionsEnabled = false
 
 local potionCodes = {
