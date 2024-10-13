@@ -184,6 +184,7 @@ Tab:CreateToggle({
     end,
 })
 
+
 Tab:CreateButton({
     Name = "Force Stop Auto Farm Breakables and Drops",
     Info = {
@@ -195,6 +196,8 @@ Tab:CreateButton({
         autoFarmEnabled = false
     end,
 })
+
+Tab:CreateSpacing(nil,10)
 
 local function teleportToBreakable(breakable)
     if player.Character and player.Character:FindFirstChild("HumanoidRootPart") and breakable and breakable.PrimaryPart then
@@ -314,6 +317,8 @@ Tab:CreateToggle({
     end,
 })
 
+Tab:CreateSpacing(nil,10)
+
 local selectedAmount = 1
 local autoEatEnabled = false
 
@@ -379,6 +384,8 @@ Tab:CreateToggle({
         autoEatEnabled = Value
     end,
 })
+
+Tab:CreateSpacing(nil,10)
 
 local args = {
     [1] = {
@@ -456,6 +463,8 @@ Tab:CreateToggle({
         end
     end,
 })
+
+Tab:CreateSpacing(nil,10)
 
 local autoBuyPotionsEnabled = false
 
