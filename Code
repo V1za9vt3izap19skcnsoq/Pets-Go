@@ -49,7 +49,7 @@ Tab:CreateButton({
     end,
 })
 
-local Label = Tab:CreateLabel("For The Autos Turn on the togglr first then put your settings for them to work",Section)
+local Label = Tab:CreateLabel("For The Autos Turn on the toggle first then put your settings for them to work",Section)
 
 local Section = Tab:CreateSection("Main",false)
 
@@ -321,14 +321,15 @@ local fruitCodes = {
     ["Apple"] = "7f9339544875405fa8150f786ac38410",
     ["Orange"] = "a81379398bfb4166900b0c8555785db2",
     ["Banana"] = "1f9136d4c15747d499d5430101b58e4d",
+    ["Rainbow"] = "7656fb5f06014fe696fdbd9985dbe104",
     ["Pineapple"] = "e6041be12581427fb53600dc1f8771c8",
     ["Watermelon"] = "19f4ad8f95bb48d89749117ca630eb34"
 }
 
 Tab:CreateDropdown({
     Name = "Fruits To Eat",
-    Options = {"Watermelon", "Pineapple", "Orange", "Banana", "Apple"},
-    CurrentOption = {"Apple", "Orange"}, -- Default selected fruits
+    Options = {"Watermelon", "Pineapple", "Rainbow", "Orange", "Banana", "Apple"},
+    CurrentOption = {"", ""}, -- Default selected fruits
     MultiSelection = true,
     Flag = "Dropdown1",
     Callback = function(Option)
