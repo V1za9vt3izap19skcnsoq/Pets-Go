@@ -53,6 +53,25 @@ local Label = Tab:CreateLabel("For The Autos Turn on the toggle first then put y
 
 local Section = Tab:CreateSection("Main",false)
 
+Tab:CreateButton({
+    Name = "Anti Afk",
+    Info = {
+        Title = 'This is a Button',
+        Description = 'This is a description for the button you know.',
+    },
+    Interact = 'Changable',
+    Callback = function()
+        print('Anti AFK Activated')
+
+        local bb = game:GetService("VirtualUser")
+        game:GetService("Players").LocalPlayer.Idled:Connect(function()
+            bb:CaptureController()
+            bb:ClickButton2(Vector2.new())
+        end)
+    end,
+})
+
+
 local isAutoRolling = false
 local autoRollTask
 
