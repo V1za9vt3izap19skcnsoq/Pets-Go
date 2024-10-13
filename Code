@@ -89,7 +89,7 @@ Tab:CreateToggle({
         if isAutoRolling then
             autoRollTask = game:GetService("RunService").Heartbeat:Connect(function()
                 game:GetService("ReplicatedStorage").Network.Eggs_Roll:InvokeServer()
-                wait(0.5)
+                wait(1)
             end)
         else
             if autoRollTask then
