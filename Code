@@ -465,8 +465,154 @@ Tab:CreateToggle({
     end,
 })
 
+local relicEspEnabled = false
+local getAllRelicsEnabled = false
+local player = game.Players.LocalPlayer
+local camera = workspace.CurrentCamera
+local runService = game:GetService("RunService")
+local relicsFolder = workspace:WaitForChild("__THINGS"):WaitForChild("Relics")
+local VirtualInputManager = game:GetService("VirtualInputManager")
 
+local RelicLines = {}
+local character, head
 
+-- Function to update the character and head reference
+local function updateCharacter(newCharacter)
+    character = newCharacter
+    head = character:WaitForChild("Head")
+
+    -- Clear any leftover lines when the player respawns
+    for _, line in pairs(RelicLines) do
+        line.Visible = false
+        line:Remove()
+    end
+    RelicLines = {}
+end
+
+-- Listen for character respawn
+player.CharacterAdded:Connect(updateCharacter)
+
+-- Initialize with the current character if player is already spawned
+if player.Character then
+    updateCharacter(player.Character)
+end
+
+Tab:CreateToggle({
+    Name = "Relic Esp",
+    Info = {
+        Title = 'Toggle ESP for Relics',
+        Image = '12735851647',
+        Description = 'Toggle the visibility of Relic ESP lines',
+    },
+    CurrentValue = false,
+    Flag = "Toggle1",
+    Callback = function(Value)
+        relicEspEnabled = Value
+        if not relicEspEnabled then
+            for _, line in pairs(RelicLines) do
+                line.Visible = false
+                line:Remove()
+            end
+            RelicLines = {}
+        end
+    end,
+})
+
+local function createLineToRelic(relic)
+    if relic.Transparency == 0.75 then return end
+    local line = Drawing.new("Line")
+    line.Thickness = 2
+    line.Color = Color3.new(1, 0, 0)
+    line.Transparency = 1
+    line.Visible = true
+    RelicLines[relic] = line
+end
+
+runService.RenderStepped:Connect(function()
+    if relicEspEnabled and head then
+        for _, relic in ipairs(relicsFolder:GetChildren()) do
+            if relic:IsA("MeshPart") and relic.Name == "Relic" then
+                if relic.Transparency == 0.75 then
+                    if RelicLines[relic] then
+                        RelicLines[relic]:Remove()
+                        RelicLines[relic] = nil
+                    end
+                else
+                    if not RelicLines[relic] then
+                        createLineToRelic(relic)
+                    end
+                    local headPos, onScreenHead = camera:WorldToViewportPoint(head.Position)
+                    local relicPos, onScreenRelic = camera:WorldToViewportPoint(relic.Position)
+                    if onScreenHead and onScreenRelic then
+                        RelicLines[relic].From = Vector2.new(headPos.X, headPos.Y)
+                        RelicLines[relic].To = Vector2.new(relicPos.X, relicPos.Y)
+                        RelicLines[relic].Visible = true
+                    else
+                        RelicLines[relic].Visible = false
+                    end
+                end
+            end
+        end
+    end
+end)
+
+local function getScreenPosition(worldPosition)
+    local screenPos, onScreen = camera:WorldToViewportPoint(worldPosition)
+    if onScreen then
+        return Vector2.new(screenPos.X, screenPos.Y), onScreen
+    end
+    return nil, false
+end
+
+local function simulateMouseClicks(relic)
+    local screenPosition, isOnScreen = getScreenPosition(relic.Position)
+    if isOnScreen and screenPosition then
+        while relic and relic.Parent and relic.Transparency ~= 0.75 and getAllRelicsEnabled do
+            VirtualInputManager:SendMouseButtonEvent(screenPosition.X, screenPosition.Y, 0, true, game, 0)
+            task.wait(0.01)
+            VirtualInputManager:SendMouseButtonEvent(screenPosition.X, screenPosition.Y, 0, false, game, 0)
+            task.wait(0.01)
+            screenPosition, isOnScreen = getScreenPosition(relic.Position)
+        end
+    end
+end
+
+local function collectRelics()
+    while getAllRelicsEnabled do
+        local nextRelic = nil
+        for _, relic in ipairs(relicsFolder:GetChildren()) do
+            if relic:IsA("MeshPart") and relic.Name == "Relic" and relic.Transparency ~= 0.75 then
+                nextRelic = relic
+                break
+            end
+        end
+
+        if nextRelic and character then
+            player.Character:SetPrimaryPartCFrame(nextRelic.CFrame)
+            simulateMouseClicks(nextRelic)
+        else
+            break
+        end
+        task.wait(0.1)
+    end
+end
+
+Tab:CreateToggle({
+    Name = "Get All Relics",
+    Info = {
+        Title = 'Automatically collect all relics',
+        Image = '12735851647',
+        Description = 'Teleport to relics and click them until they have 0.75 transparency',
+    },
+    CurrentValue = false,
+    Flag = "Toggle2",
+    Callback = function(Value)
+        getAllRelicsEnabled = Value
+        if getAllRelicsEnabled then
+            collectRelics()
+        end
+    end,
+})
 
 local Section = Tab:CreateSection("Visuals (Not Fe)",false)
 
