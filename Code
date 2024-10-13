@@ -207,6 +207,7 @@ end
 task.spawn(function()
     while true do
         if autoFarmEnabled then
+task.wait(4.5)
             local targetBreakable = getClosestBreakable()
 
             if targetBreakable and targetBreakable:IsA("Model") and targetBreakable.PrimaryPart then
