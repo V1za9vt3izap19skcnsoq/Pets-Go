@@ -139,7 +139,7 @@ Tab:CreateToggle({
 })
 
 local autoFarmEnabled = false
-local farmSpeed = 0.073
+local farmSpeed = 0.09
 
 Tab:CreateToggle({
     Name = "Auto Farm Breakables",
