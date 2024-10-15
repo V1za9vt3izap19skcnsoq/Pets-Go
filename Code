@@ -547,6 +547,9 @@ local potionCodes = {
     ["Lucky Potion IV"] = 3,
     ["Lucky Potion V"] = 4,
     ["Rainbow Dice"] = 4,
+    ["Insta Luck I"] = 20,
+    ["Insta Luck II"] = 21,
+    ["Insta Luck III"] = 22,
     ["The CockTail"] = 23
 }
 
@@ -573,6 +576,9 @@ Tab:CreateDropdown({
         "Breakable Potion II", 
         "Golden Dice", 
         "Rainbow Dice", 
+        "Insta Luck I", 
+        "Insta Luck II", 
+        "Insta Luck III", 
         "The CockTail"
     },
     CurrentOption = {"", ""}, 
