@@ -139,7 +139,7 @@ Tab:CreateToggle({
 })
 
 local autoFarmEnabled = false
-local farmSpeed = 0.09
+local farmSpeed = 0.073
 
 Tab:CreateToggle({
     Name = "Auto Farm Breakables",
@@ -320,6 +320,12 @@ Tab:CreateToggle({
         end
     end,
 })
+
+local Section = Tab:CreateSection("Autos",false)
+
+local Label = Tab:CreateLabel("Turn the toggles on then put your settings for these to work",Section)
+
+local Label = Tab:CreateLabel("To Not Break the dropdowns turn the toggle off first then deselect the dropdown options",Section)
 
 local autoBuyMI = false
 local merchantIndexMapping = {
@@ -606,6 +612,8 @@ Tab:CreateToggle({
     end,
 })
 
+Tab:CreateSpacing(nil,10)
+
 local potions = {
     ["Coin Potion I"] = "f72d0b5051134ecd87b24bdb0b761b78",
     ["Coin Potion II"] = "1e02bd186a8843a5b5beb5e3fb409ce6",
@@ -618,14 +626,14 @@ local potions = {
     ["Luck Potion IV"] = "a1650f5aa9734522a80d019da92331ea",
     ["Luck Potion V"] = "cb34d3d92ade4919831109cd3ae44831",
     ["Walkspeed Potion I"] = "755c298b770b447b8563b2d497c42165",
-    ["Walkspeed Potion II"] = "b162d0aa0c1e48ebb03ceeba358106cb",
+    ["Walkspeed Potion II"] = "0466c70ea790469db99f6354826ed25e",
     ["Walkspeed Potion III"] = "0f5ca5101e094b97a7595776874db23d",
     ["Items Potion I"] = "8fb85b1ffb40475ea785757c27e7894d",
     ["Items Potion II"] = "a707c3aed4ba4660b76acea4fe65a9f4",
     ["Breakables Potion I"] = "cd8974d345624bf0843d137e32d4f4c2",
     ["Breakables Potion II"] = "56eabad3159c45f2b050e2ff47838b76",
     ["Insta Luck I"] = "f121863f15134aa2819eb2bfdcb5db9f",
-    ["Insta Luck II"] = "bd17355166534983a2ada975d5dbac5f",
+    ["Insta Luck II"] = "c800a6b00b9e46b09cc1e430bf8e2830",
     ["Insta Luck III"] = "23e2c5eb44d84f0bb490e78d3e4ba079",
     ["Golden Dice Potion"] = "a45e6ca5d86c481e8f223000bdb9d5e8",
     ["Rainbow Dice"] = "8e1a0cfdb4144f50b8ab0113f4ab53e6",
@@ -695,6 +703,8 @@ Tab:CreateToggle({
         autoUsePotions = value
     end,
 })
+
+local Section = Tab:CreateSection("Extra",false)
 
 local relicEspEnabled = false
 local getAllRelicsEnabled = false
